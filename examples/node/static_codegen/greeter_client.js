@@ -19,11 +19,11 @@
 var messages = require('./helloworld_pb');
 var services = require('./helloworld_grpc_pb');
 
-var grpc = require('grpc');
+var grpc = require('@grpc/grpc-js');
 
 function main() {
   var client = new services.GreeterClient('localhost:50051',
-                                          grpc.credentials.createInsecure());
+                                          grpc.ChannelCredentials.createInsecure());
   var request = new messages.HelloRequest();
   var user;
   if (process.argv.length >= 3) {
@@ -33,7 +33,11 @@ function main() {
   }
   request.setName(user);
   client.sayHello(request, function(err, response) {
-    console.log('Greeting:', response.getMessage());
+    if (response) {
+      console.log('Greeting:', response.getMessage());
+    } else if (err) {
+      console.log('Error:', err);
+    }
   });
 }
 
